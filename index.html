@@ -1,0 +1,473 @@
+
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Hind Siliguri',sans-serif;background:#0b0f1e;color:#e2eeff;min-height:100vh;overflow-x:hidden}
+.page{display:none;min-height:100vh;padding:24px 16px}
+.page.on{display:flex;flex-direction:column;align-items:center}
+
+/* HOME */
+.logo{width:80px;height:80px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:38px;margin:32px auto 16px;background:linear-gradient(135deg,#00c6ff,#00ffb0)}
+.site-title{font-size:clamp(26px,5vw,44px);font-weight:700;text-align:center;background:linear-gradient(135deg,#00c6ff,#00ffb0,#ff7043);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px}
+.site-sub{color:#6b8cba;font-size:15px;text-align:center;margin-bottom:6px}
+.badge{display:inline-block;background:rgba(0,198,255,.12);border:1px solid rgba(0,198,255,.3);color:#00c6ff;padding:4px 18px;border-radius:20px;font-size:13px;margin-bottom:36px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;width:100%;max-width:900px}
+.card{background:#111827;border:1px solid #1a3050;border-radius:18px;padding:32px 24px;cursor:pointer;transition:all .3s;position:relative;overflow:hidden}
+.card:hover{transform:translateY(-5px)}
+.card.iq:hover{border-color:#00c6ff;box-shadow:0 18px 50px rgba(0,198,255,.18)}
+.card.ict:hover{border-color:#00ffb0;box-shadow:0 18px 50px rgba(0,255,176,.18)}
+.card.math:hover{border-color:#ff7043;box-shadow:0 18px 50px rgba(255,112,67,.18)}
+.card-icon{font-size:44px;margin-bottom:14px;display:block}
+.card-name{font-size:24px;font-weight:700;margin-bottom:8px}
+.card.iq .card-name{color:#00c6ff}
+.card.ict .card-name{color:#00ffb0}
+.card.math .card-name{color:#ff7043}
+.card-desc{color:#6b8cba;font-size:13px;line-height:1.6;margin-bottom:18px}
+.pills{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
+.pill{font-size:12px;padding:3px 12px;border-radius:20px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#aac}
+.go-btn{width:100%;padding:13px;border:none;border-radius:10px;font-family:'Hind Siliguri',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:all .25s}
+.card.iq .go-btn{background:linear-gradient(135deg,#00c6ff,#0099cc);color:#000}
+.card.ict .go-btn{background:linear-gradient(135deg,#00ffb0,#00cc88);color:#000}
+.card.math .go-btn{background:linear-gradient(135deg,#ff7043,#dd4411);color:#fff}
+.go-btn:hover{transform:scale(1.03)}
+
+/* QUIZ PAGE */
+.qhdr{width:100%;max-width:780px;display:flex;align-items:center;gap:12px;margin-bottom:22px;flex-wrap:wrap}
+.back{background:#111827;border:1px solid #1a3050;color:#e2eeff;padding:9px 16px;border-radius:10px;cursor:pointer;font-family:'Hind Siliguri',sans-serif;font-size:14px;transition:all .2s}
+.back:hover{border-color:#6b8cba}
+.qbadge{padding:5px 14px;border-radius:20px;font-size:13px;font-weight:600}
+.qtitle{font-size:18px;font-weight:700;flex:1}
+.timer{background:#111827;border:1px solid #1a3050;padding:7px 14px;border-radius:20px;font-size:14px;font-weight:600;display:flex;align-items:center;gap:6px}
+.dot{width:8px;height:8px;border-radius:50%;background:#00ffb0;animation:blink 1s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+.prog-wrap{width:100%;max-width:780px;margin-bottom:20px}
+.prog-top{display:flex;justify-content:space-between;font-size:13px;color:#6b8cba;margin-bottom:7px}
+.prog-bar{height:6px;background:#1a3050;border-radius:3px;overflow:hidden}
+.prog-fill{height:100%;border-radius:3px;transition:width .4s ease}
+
+.qcard{width:100%;max-width:780px;background:#111827;border:1px solid #1a3050;border-radius:18px;padding:30px}
+.qno{font-size:12px;color:#6b8cba;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
+.qtext{font-size:clamp(15px,2.4vw,19px);font-weight:600;line-height:1.6;margin-bottom:24px}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:520px){.opts{grid-template-columns:1fr}}
+.opt{background:#1a2236;border:2px solid #1a3050;border-radius:12px;padding:14px 16px;text-align:left;cursor:pointer;color:#e2eeff;font-family:'Hind Siliguri',sans-serif;font-size:14px;line-height:1.5;transition:all .22s;display:flex;align-items:flex-start;gap:10px}
+.opt-lbl{width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.07);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;transition:all .22s}
+.opt:hover:not(.locked){transform:translateX(4px)}
+.opt.right{border-color:#00ffb0 !important;background:rgba(0,255,176,.1) !important}
+.opt.right .opt-lbl{background:#00ffb0;color:#000}
+.opt.wrong{border-color:#ff4757 !important;background:rgba(255,71,87,.1) !important}
+.opt.wrong .opt-lbl{background:#ff4757;color:#fff}
+.opt.dim{opacity:.35;pointer-events:none}
+.opt.locked{pointer-events:none}
+
+.fb{margin-top:18px;padding:13px 18px;border-radius:10px;font-size:14px;font-weight:500;display:none;align-items:center;gap:8px}
+.fb.show{display:flex}
+.fb.ok{background:rgba(0,255,176,.1);border:1px solid rgba(0,255,176,.3);color:#00ffb0}
+.fb.bad{background:rgba(255,71,87,.1);border:1px solid rgba(255,71,87,.3);color:#ff4757}
+
+.nav{width:100%;max-width:780px;margin-top:20px;display:flex;justify-content:flex-end}
+.nxt{padding:13px 28px;border:none;border-radius:10px;font-family:'Hind Siliguri',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:all .25s;display:none}
+.nxt.show{display:block}
+
+/* RESULT */
+.res-card{max-width:680px;width:100%;background:#111827;border:1px solid #1a3050;border-radius:24px;padding:44px 32px;text-align:center;margin-top:24px}
+.trophy{font-size:68px;margin-bottom:16px;display:block}
+.res-title{font-size:30px;font-weight:700;margin-bottom:6px}
+.res-sub{color:#6b8cba;font-size:15px;margin-bottom:32px}
+.score-ring{width:150px;height:150px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto 28px}
+.score-big{font-size:72px;font-weight:700;line-height:1}
+.score-of{font-size:18px;color:#6b8cba}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:26px}
+.stat{background:#1a2236;border:1px solid #1a3050;border-radius:12px;padding:18px 10px}
+.stat-n{font-size:26px;font-weight:700;margin-bottom:4px}
+.stat-l{font-size:12px;color:#6b8cba}
+.grade-box{background:rgba(255,255,255,.03);border:1px solid #1a3050;border-radius:12px;padding:18px;margin-bottom:26px}
+.grade-lbl{font-size:13px;color:#6b8cba;margin-bottom:4px}
+.grade-val{font-size:22px;font-weight:700}
+.grade-msg{font-size:13px;color:#6b8cba;margin-top:4px}
+.res-btns{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.rbtn{padding:13px 26px;border-radius:10px;font-family:'Hind Siliguri',sans-serif;font-size:15px;font-weight:700;cursor:pointer;border:none;transition:all .25s}
+.rbtn.sec{background:#1a2236;border:1px solid #1a3050;color:#e2eeff}
+.rbtn:hover{transform:scale(1.04)}
+</style>
+</head>
+<body>
+
+<!-- HOME -->
+<div class="page on" id="pg-home">
+  <div class="logo">🧠</div>
+  <div class="site-title">মেধা পরীক্ষা কেন্দ্র</div>
+  <div class="site-sub">তোমার জ্ঞান যাচাই করো</div>
+  <span class="badge">📚 অষ্টম শ্রেণি স্তর</span>
+  <div class="cards">
+    <div class="card iq" onclick="begin('iq')">
+      <span class="card-icon">🧠</span>
+      <div class="card-name">IQ টেস্ট</div>
+      <div class="card-desc">বুদ্ধিমত্তা ও যুক্তিবিদ্যার পরীক্ষা। প্যাটার্ন, সিকোয়েন্স, লজিক্যাল রিজনিং এবং অ্যানালিটিক্যাল প্রশ্ন।</div>
+      <div class="pills"><span class="pill">৫০টি প্রশ্ন</span><span class="pill">⏱ ৪০ মিনিট</span><span class="pill">MCQ</span></div>
+      <button class="go-btn">শুরু করো →</button>
+    </div>
+    <div class="card ict" onclick="begin('ict')">
+      <span class="card-icon">💻</span>
+      <div class="card-name">ICT টেস্ট</div>
+      <div class="card-desc">তথ্য ও যোগাযোগ প্রযুক্তি পরীক্ষা। কম্পিউটার, ইন্টারনেট, প্রোগ্রামিং এবং ডিজিটাল প্রযুক্তির প্রশ্ন।</div>
+      <div class="pills"><span class="pill">৫০টি প্রশ্ন</span><span class="pill">⏱ ৪০ মিনিট</span><span class="pill">MCQ</span></div>
+      <button class="go-btn">শুরু করো →</button>
+    </div>
+    <div class="card math" onclick="begin('math')">
+      <span class="card-icon">📐</span>
+      <div class="card-name">গণিত টেস্ট</div>
+      <div class="card-desc">অষ্টম শ্রেণির গণিত পরীক্ষা। বীজগণিত, জ্যামিতি, পরিসংখ্যান এবং সাধারণ গণিতের চ্যালেঞ্জিং প্রশ্ন।</div>
+      <div class="pills"><span class="pill">৫০টি প্রশ্ন</span><span class="pill">⏱ ৪০ মিনিট</span><span class="pill">MCQ</span></div>
+      <button class="go-btn">শুরু করো →</button>
+    </div>
+  </div>
+</div>
+
+<!-- QUIZ -->
+<div class="page" id="pg-quiz">
+  <div class="qhdr">
+    <button class="back" onclick="goHome()">← ফিরে যাও</button>
+    <span class="qbadge" id="qbadge"></span>
+    <span class="qtitle" id="qtitle"></span>
+    <div class="timer"><div class="dot" id="tdot"></div><span id="tdisp">৪০:০০</span></div>
+  </div>
+  <div class="prog-wrap">
+    <div class="prog-top"><span id="ptext">প্রশ্ন ১/৫০</span><span id="stext">স্কোর: ০</span></div>
+    <div class="prog-bar"><div class="prog-fill" id="pfill" style="width:2%"></div></div>
+  </div>
+  <div class="qcard">
+    <div class="qno" id="qno">প্রশ্ন ০১</div>
+    <div class="qtext" id="qtext"></div>
+    <div class="opts" id="opts"></div>
+    <div class="fb" id="fb"></div>
+  </div>
+  <div class="nav"><button class="nxt" id="nxtbtn" onclick="nextQ()">পরের প্রশ্ন →</button></div>
+</div>
+
+<!-- RESULT -->
+<div class="page" id="pg-result">
+  <div class="res-card">
+    <span class="trophy" id="rtrophy">🏆</span>
+    <div class="res-title" id="rtitle">পরীক্ষা শেষ!</div>
+    <div class="res-sub" id="rsub"></div>
+    <div class="score-ring" id="sring">
+      <div class="score-big" id="sbig">0</div>
+      <div class="score-of">/ ৫০</div>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="stat-n" style="color:#00ffb0" id="sc">0</div><div class="stat-l">✅ সঠিক</div></div>
+      <div class="stat"><div class="stat-n" style="color:#ff4757" id="sw">0</div><div class="stat-l">❌ ভুল</div></div>
+      <div class="stat"><div class="stat-n" style="color:#ffd700" id="sp">0%</div><div class="stat-l">📊 পার্সেন্ট</div></div>
+    </div>
+    <div class="grade-box">
+      <div class="grade-lbl">তোমার গ্রেড</div>
+      <div class="grade-val" id="gval"></div>
+      <div class="grade-msg" id="gmsg"></div>
+    </div>
+    <div class="res-btns">
+      <button class="rbtn" id="retrybtn" onclick="retry()">🔄 আবার দাও</button>
+      <button class="rbtn sec" onclick="goHome()">🏠 হোম পেজ</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const BN=['০','১','২','৩','৪','৫','৬','৭','৮','৯'];
+function bn(n){return String(n).replace(/[0-9]/g,d=>BN[+d]);}
+
+const IQ=[
+  {q:"২, ৪, ৮, ১৬, ৩২ — পরের সংখ্যাটি কত?",o:["৬০","৬৪","৬৮","৭২"],a:1},
+  {q:"একটি ঘড়িতে ৩:৩০ বাজলে ঘণ্টার কাঁটা ও মিনিটের কাঁটার মধ্যে কোণ কত?",o:["৭৫°","৯০°","৬০°","৪৫°"],a:0},
+  {q:"ABCD : DCBA :: WXYZ : ?",o:["ZYXW","XYZW","ZWXY","YZXW"],a:0},
+  {q:"১ থেকে ১০ পর্যন্ত বিজোড় সংখ্যাগুলোর যোগফল কত?",o:["২০","২৫","৩০","৩৫"],a:1},
+  {q:"রহিম, করিম থেকে বয়সে ৩ বছর বড়। করিম, জলিল থেকে ২ বছর ছোট। জলিলের বয়স ১৫ হলে রহিমের বয়স কত?",o:["১৬","১৭","১৮","১৯"],a:0},
+  {q:"একটি বর্গের কর্ণ ১০ হলে তার ক্ষেত্রফল কত?",o:["৫০","১০০","৭০","৪০"],a:0},
+  {q:"নিচের মধ্যে কোনটি আলাদা? বাঘ, সিংহ, হাতি, কুমির",o:["বাঘ","সিংহ","হাতি","কুমির"],a:3},
+  {q:"৫ জন মিলে ৫ দিনে ৫টি কাজ করলে, ১ জন ১ দিনে কয়টি কাজ করে?",o:["১","১/৫","৫","১/২৫"],a:1},
+  {q:"A B C D E F G H I J — ১০ম অক্ষরটি কী?",o:["H","I","J","K"],a:2},
+  {q:"৩, ৬, ১১, ১৮, ২৭, ৩৮ — পরের সংখ্যাটি কী?",o:["৪৯","৫১","৫০","৪৮"],a:1},
+  {q:"একটি আয়তক্ষেত্রের দৈর্ঘ্য প্রস্থের দ্বিগুণ। পরিসীমা ৩৬ হলে দৈর্ঘ্য কত?",o:["৬","৮","১০","১২"],a:3},
+  {q:"কোন সংখ্যাটিকে ৪ দিয়ে ভাগ করলে ভাগশেষ ০ হয়?",o:["১৪","১৭","২০","২৩"],a:2},
+  {q:"বই : পাঠক :: চলচ্চিত্র : ?",o:["পরিচালক","দর্শক","অভিনেতা","প্রযোজক"],a:1},
+  {q:"একটি ট্রেন ৬০ কি.মি./ঘণ্টা গতিতে চলে। ১৫ মিনিটে কত দূর যাবে?",o:["১৫ কি.মি.","২০ কি.মি.","১০ কি.মি.","১২ কি.মি."],a:0},
+  {q:"১২ × ১২ = ১৪৪। ১১ × ১১ = ১২১। ১৩ × ১৩ = ?",o:["১৬৯","১৫৯","১৭৯","১৮৯"],a:0},
+  {q:"একটি কাপড় ৩৬টি বোতাম দিয়ে সেলাই হয়। ৯টি কাপড় সেলাই করতে কতটি বোতাম লাগবে?",o:["৩০০","২৮৮","৩২৪","৩৬০"],a:2},
+  {q:"পৃথিবী : সূর্য :: চাঁদ : ?",o:["তারা","পৃথিবী","মঙ্গল","আকাশ"],a:1},
+  {q:"১০০ এর মধ্যে কতটি মৌলিক সংখ্যা আছে?",o:["২৩","২৫","২৭","২১"],a:1},
+  {q:"একটি সংখ্যার তিনগুণ থেকে ৭ বিয়োগ করলে ৮ পাওয়া যায়। সংখ্যাটি কত?",o:["৩","৪","৫","৬"],a:2},
+  {q:"১ + ২ + ৩ + ... + ২০ = ?",o:["১৯০","২০০","২১০","২২০"],a:2},
+  {q:"সূর্যোদয় : পূর্ব :: সূর্যাস্ত : ?",o:["উত্তর","দক্ষিণ","পশ্চিম","উপরে"],a:2},
+  {q:"১৬, ৮, ৪, ২, ১ — পরের সংখ্যাটি কী?",o:["০.৫","০","১","০.২৫"],a:0},
+  {q:"কোন শব্দটি অন্যগুলোর সাথে মেলে না? গোলাপ, জুঁই, আম, চামেলি",o:["গোলাপ","জুঁই","আম","চামেলি"],a:2},
+  {q:"একটি বৃত্তের ব্যাসার্ধ ৭ হলে পরিধি কত? (π ≈ ২২/৭)",o:["৪৪","২২","৮৮","৩৩"],a:0},
+  {q:"রাত ১২টায় ঘড়িতে ঘণ্টার কাঁটা ও মিনিটের কাঁটার কোণ কত?",o:["১৮০°","৯০°","০°","৩৬০°"],a:2},
+  {q:"QRS : TUV :: WXY : ?",o:["XYZ","ZAB","ZBC","ABC"],a:1},
+  {q:"একটি পুকুরে প্রথম দিন ১টি শাপলা থাকে। প্রতিদিন দ্বিগুণ হয়। ১০ম দিনে কতটি হবে?",o:["৫১২","১০২৪","২০৪৮","৫৬"],a:0},
+  {q:"ডাক্তার : হাসপাতাল :: শিক্ষক : ?",o:["বই","ছাত্র","বিদ্যালয়","লেকচার"],a:2},
+  {q:"৭২ ÷ ৮ × ৪ – ১২ + ৬ = ?",o:["৩০","৩৬","৪২","২৮"],a:0},
+  {q:"একটি ঘনকের প্রতিটি বাহু ৪ সে.মি. হলে আয়তন কত?",o:["৪৮","৩২","৬৪","১৬"],a:2},
+  {q:"১৫ জন লোক ১০ দিনে একটি কাজ করে। ৬ জন লোক ঐ কাজ কত দিনে করবে?",o:["২০","২৫","৩০","৪০"],a:1},
+  {q:"নিচের ধারার পরবর্তী সংখ্যা: ০, ১, ১, ২, ৩, ৫, ৮, ১৩, ?",o:["১৮","২০","২১","২৪"],a:2},
+  {q:"দুটি সংখ্যার অনুপাত ৩:৫। তাদের যোগফল ৪০। বড় সংখ্যাটি কত?",o:["১৫","২০","২৫","৩০"],a:2},
+  {q:"কোন সংখ্যার ২০% হলো ৩০? সংখ্যাটি কত?",o:["১০০","১২০","১৫০","২০০"],a:2},
+  {q:"ত্রিভুজের তিনটি কোণের যোগফল কত?",o:["৯০°","১৮০°","২৭০°","৩৬০°"],a:1},
+  {q:"সকালে : রাতে :: গ্রীষ্ম : ?",o:["বসন্ত","শীত","বর্ষা","হেমন্ত"],a:1},
+  {q:"১০০০ মিটার = কত কিলোমিটার?",o:["০.০১","০.১","১","১০"],a:2},
+  {q:"কোন সংখ্যার বর্গমূল ১৩? সেই সংখ্যাটি কত?",o:["১৩৯","১৬৯","১৯৬","১২৯"],a:1},
+  {q:"একটি আয়তক্ষেত্রের দৈর্ঘ্য ১২ ও প্রস্থ ৮। কর্ণের দৈর্ঘ্য কত?",o:["১৪","১৫","২০","১০"],a:0},
+  {q:"৫টি বিড়াল ৫ মিনিটে ৫টি ইঁদুর ধরলে, ১০০টি বিড়াল ১০০ মিনিটে কতটি ইঁদুর ধরবে?",o:["১০০","৫০০","১০০০","১০"],a:2},
+  {q:"পাখি : উড়তে পারে :: মাছ : ?",o:["ডাকে","সাঁতার কাটে","হাঁটে","দৌড়ায়"],a:1},
+  {q:"৩ × ৪ + ৫ × ২ – ৬ = ?",o:["১৬","১৮","২০","২২"],a:0},
+  {q:"একটি বৃত্তের ব্যাস ১৪ সে.মি.। ব্যাসার্ধ কত?",o:["৭","১৪","২৮","৩.৫"],a:0},
+  {q:"১ থেকে ১০০ পর্যন্ত সংখ্যায় কতটি ৩ আছে?",o:["১০","১৮","২০","২১"],a:2},
+  {q:"একজন দোকানদার ২০% লাভে একটি পণ্য ১২০ টাকায় বিক্রি করে। ক্রয়মূল্য কত?",o:["৯০","১০০","৯৬","৮০"],a:1},
+  {q:"৪ × (৩ + ২) – ৫ × ২ = ?",o:["৮","১০","১২","১৪"],a:1},
+  {q:"MNO এর বিপরীত ক্রম কী?",o:["NML","PON","ONM","NOP"],a:2},
+  {q:"কোন কাজ A একা ১০ দিনে এবং B একা ১৫ দিনে করতে পারে। একসাথে কত দিনে করবে?",o:["৪","৫","৬","৮"],a:2},
+  {q:"একটি গাড়ি ৮০ কি.মি./ঘণ্টা গতিতে ২ ঘণ্টায় কত দূর যাবে?",o:["১২০","১৬০","১৮০","২০০"],a:1},
+  {q:"৫! (৫ ফ্যাক্টোরিয়াল) এর মান কত?",o:["১০","২০","৬০","১২০"],a:3},
+];
+
+const ICT=[
+  {q:"CPU এর পূর্ণরূপ কী?",o:["Central Processing Unit","Computer Processing Unit","Central Program Unit","Core Processing Unit"],a:0},
+  {q:"HTML এর পূর্ণরূপ কী?",o:["Hyper Text Markup Language","High Text Markup Language","Hyper Tool Markup Language","Hyper Text Modeling Language"],a:0},
+  {q:"www এর পূর্ণরূপ কী?",o:["World Wide Web","World Web Wide","Wide World Web","Web Wide World"],a:0},
+  {q:"একটি বাইটে কতটি বিট থাকে?",o:["৪","৮","১৬","৩২"],a:1},
+  {q:"ইন্টারনেটের জনক কে?",o:["Bill Gates","Tim Berners-Lee","Vint Cerf","Steve Jobs"],a:2},
+  {q:"RAM এর পূর্ণরূপ কী?",o:["Random Access Memory","Read And Memory","Rapid Access Memory","Random Active Memory"],a:0},
+  {q:"Python কী ধরনের প্রোগ্রামিং ভাষা?",o:["শুধু compile","Interpreted","শুধু Assembly","Machine Level"],a:1},
+  {q:"কম্পিউটারে ডেটা সংরক্ষণের সবচেয়ে ছোট একক কোনটি?",o:["Byte","Bit","Kilobyte","Nibble"],a:1},
+  {q:"Google Chrome কী?",o:["অপারেটিং সিস্টেম","ওয়েব ব্রাউজার","অ্যান্টিভাইরাস","ডেটাবেজ"],a:1},
+  {q:"IP এর পূর্ণরূপ কী?",o:["Internet Protocol","Internal Program","Internet Processor","Input Protocol"],a:0},
+  {q:"নিচের কোনটি Input Device?",o:["Monitor","Printer","Keyboard","Speaker"],a:2},
+  {q:"MS Word কোন ধরনের সফটওয়্যার?",o:["System Software","Word Processor","Antivirus","Game"],a:1},
+  {q:"Wi-Fi এর পূর্ণরূপ কী?",o:["Wireless Fidelity","Wide Frequency","Web Interface","Wireless Format"],a:0},
+  {q:"Email এর জনক কে?",o:["Bill Gates","Ray Tomlinson","Mark Zuckerberg","Larry Page"],a:1},
+  {q:"1 Kilobyte = কত Byte?",o:["৫১২","১০০০","১০২৪","২০৪৮"],a:2},
+  {q:"HTML-এ হেডিং ট্যাগ কোনটি?",o:["<head>","<h1>","<title>","<heading>"],a:1},
+  {q:"কোনটি Social Media Platform নয়?",o:["Facebook","Instagram","Google Docs","Twitter"],a:2},
+  {q:"Binary সংখ্যা পদ্ধতিতে কয়টি ডিজিট ব্যবহার হয়?",o:["১","২","৮","১০"],a:1},
+  {q:"Binary তে ১০১ = Decimal তে কত?",o:["৩","৪","৫","৬"],a:2},
+  {q:"কম্পিউটার ভাইরাস কী?",o:["একটি ব্যাকটেরিয়া","একটি ক্ষতিকর প্রোগ্রাম","একটি হার্ডওয়্যার","একটি ডিভাইস"],a:1},
+  {q:"JPEG কী?",o:["একটি ভিডিও ফরম্যাট","একটি ছবির ফরম্যাট","একটি অডিও ফরম্যাট","একটি ডকুমেন্ট ফরম্যাট"],a:1},
+  {q:"Ctrl + C কীবোর্ড শর্টকাট কী করে?",o:["পেস্ট করে","সেভ করে","কপি করে","আনডু করে"],a:2},
+  {q:"Android কে তৈরি করেছে?",o:["Apple","Microsoft","Google","Samsung"],a:2},
+  {q:"URL এর পূর্ণরূপ কী?",o:["Universal Resource Locator","Uniform Resource Locator","Unique Resource Link","Universal Reference Locator"],a:1},
+  {q:'Python-এ print করার সঠিক সিনট্যাক্স কোনটি?',o:['echo "Hello"','printf("Hello")','print("Hello")','cout << "Hello"'],a:2},
+  {q:"USB এর পূর্ণরূপ কী?",o:["Universal Serial Bus","Unified System Bus","Universal System Board","Unified Serial Board"],a:0},
+  {q:"PDF এর পূর্ণরূপ কী?",o:["Page Document Format","Portable Document Format","Print Document File","Portable Data File"],a:1},
+  {q:"কোনটি Output Device?",o:["Keyboard","Mouse","Monitor","Scanner"],a:2},
+  {q:"১ Megabyte = কত Kilobyte?",o:["৫১২","১০০০","১০২৪","২০৪৮"],a:2},
+  {q:"Windows কোন কোম্পানির পণ্য?",o:["Apple","Google","Microsoft","IBM"],a:2},
+  {q:"GPS এর পূর্ণরূপ কী?",o:["Global Positioning System","Geographic Positioning System","Global Program System","General Positioning Software"],a:0},
+  {q:"HTML এ link করার ট্যাগ কোনটি?",o:["<link>","<a>","<href>","<url>"],a:1},
+  {q:"E-mail পাঠাতে কোন প্রতীক অবশ্যই থাকতে হয়?",o:["#","@","$","%"],a:1},
+  {q:"কোনটি Programming Language নয়?",o:["Python","HTML","Java","C++"],a:1},
+  {q:"Bluetooth কী?",o:["একটি তার সংযোগ","একটি বেতার প্রযুক্তি","একটি অপারেটিং সিস্টেম","একটি ব্রাউজার"],a:1},
+  {q:"ROM এর পূর্ণরূপ কী?",o:["Random Only Memory","Read Only Memory","Run Only Memory","Read On Memory"],a:1},
+  {q:"Keyboard-এ Function Keys কতটি?",o:["১০","১২","১৪","১৬"],a:1},
+  {q:"একটি ওয়েবসাইটের Address কে কী বলে?",o:["Email","URL","IP","DNS"],a:1},
+  {q:"Python-এ comment লেখার চিহ্ন কোনটি?",o:["//","/*","#","--"],a:2},
+  {q:"ATM এর পূর্ণরূপ কী?",o:["Automatic Teller Machine","Automated Transfer Machine","Automatic Transfer Money","Automated Teller Machine"],a:3},
+  {q:"কোন ডিভাইসটি ডেটা Store করে?",o:["CPU","RAM","Hard Disk","Monitor"],a:2},
+  {q:"Malware কী?",o:["একটি নেটওয়ার্ক ডিভাইস","ক্ষতিকর সফটওয়্যার","একটি প্রোগ্রামিং ভাষা","একটি ব্রাউজার"],a:1},
+  {q:"Python-এ variable তৈরি করার সঠিক উপায় কোনটি?",o:["var x = 5","int x = 5","x = 5","let x = 5"],a:2},
+  {q:"Firewall কী কাজ করে?",o:["ডেটা সংরক্ষণ করে","নেটওয়ার্ক সুরক্ষা দেয়","ছবি সম্পাদনা করে","ভিডিও চালায়"],a:1},
+  {q:"MP3 কোন ধরনের ফাইল ফরম্যাট?",o:["ভিডিও","ছবি","অডিও","ডকুমেন্ট"],a:2},
+  {q:"Decimal ১০ = Binary তে কত?",o:["১০০০","১০১০","১০০১","১০১১"],a:1},
+  {q:"যে সফটওয়্যার দিয়ে ওয়েবপেজ দেখা যায় তাকে কী বলে?",o:["Database","Compiler","Web Browser","Operating System"],a:2},
+  {q:"QR Code পূর্ণরূপ কী?",o:["Quick Response Code","Query Response Code","Quick Read Code","Queue Response Code"],a:0},
+  {q:"Python-এ loop চালানোর keyword কোনটি?",o:["loop","repeat","for","cycle"],a:2},
+  {q:"যে প্রযুক্তি দিয়ে দুটি ডিভাইস তারবিহীনভাবে সংযুক্ত হয় তাকে কী বলে?",o:["LAN","WAN","Wireless","Modem"],a:2},
+];
+
+const MATH=[
+  {q:"√১৬৯ = ?",o:["১১","১৩","১২","১৪"],a:1},
+  {q:"x + ৫ = ১২ হলে x = ?",o:["৫","৭","৮","৬"],a:1},
+  {q:"একটি বর্গক্ষেত্রের বাহু ৬ সে.মি.। ক্ষেত্রফল কত?",o:["২৪","৩৬","১৮","১২"],a:1},
+  {q:"৩x – ৭ = ১১ হলে x = ?",o:["৪","৫","৬","৭"],a:2},
+  {q:"১২ এর ৩৩.৩৩% কত?",o:["২","৩","৪","৫"],a:2},
+  {q:"একটি ত্রিভুজের ভূমি ১০ ও উচ্চতা ৬। ক্ষেত্রফল কত?",o:["৬০","৩০","১৫","৪৫"],a:1},
+  {q:"2x + 3 = 15 হলে x = ?",o:["৪","৫","৬","৭"],a:2},
+  {q:"৫২ × ৪ = ?",o:["২০৮","২০০","২১২","২১৮"],a:0},
+  {q:"দুটি সংখ্যার লসাগু ৩৬ ও গসাগু ৬। একটি সংখ্যা ১২ হলে অন্যটি?",o:["৬","১৮","২৪","৩৬"],a:1},
+  {q:"৪৫° এর পূরক কোণ কত?",o:["৪৫°","৯০°","১৩৫°","১৮০°"],a:0},
+  {q:"০.৫ × ০.৫ = ?",o:["২.৫","০.২৫","০.০২৫","২৫"],a:1},
+  {q:"একটি বৃত্তের ব্যাসার্ধ ৫ সে.মি.। পরিধি কত? (π = ৩.১৪)",o:["৩১.৪","১৫.৭","৬২.৮","৭৮.৫"],a:0},
+  {q:"(x + ৩)(x – ৩) = ?",o:["x² – ৯","x² + ৯","x² – ৬","x² + ৬"],a:0},
+  {q:"৬০ ÷ ১.৫ = ?",o:["৪০","৩০","৯০","৪৫"],a:0},
+  {q:"সমদ্বিবাহু ত্রিভুজে সমান বাহু দুটির মধ্যে কোণ ৫০° হলে অন্য দুটি কোণ কত?",o:["৬৫°, ৬৫°","৫০°, ৮০°","৪০°, ৯০°","৫০°, ৫০°"],a:0},
+  {q:"a² – b² কে কীভাবে উৎপাদকে বিশ্লেষণ করা যায়?",o:["(a+b)(a–b)","(a–b)²","(a+b)²","a(a–b)"],a:0},
+  {q:"৩/৪ + ১/৪ = ?",o:["১/৪","১/২","৩/৪","১"],a:3},
+  {q:"১ বর্গমিটার = কত বর্গ সেন্টিমিটার?",o:["১০০","১০০০","১০,০০০","১,০০,০০০"],a:2},
+  {q:"কোনো সংখ্যার ১৫% = ৪৫। সংখ্যাটি কত?",o:["২০০","২৫০","৩০০","৩৫০"],a:2},
+  {q:"৩/৫ কে দশমিকে রূপান্তর করো।",o:["০.৩","০.৫","০.৬","০.৩৫"],a:2},
+  {q:"১২, ১৮, ২৪ এর গসাগু কত?",o:["৩","৬","১২","২৪"],a:1},
+  {q:"x² = ৮১ হলে x = ?",o:["±৭","±৮","±৯","±১০"],a:2},
+  {q:"একটি পিরামিডের তলা বর্গাকার বাহু ৪ ও উচ্চতা ৬। আয়তন কত?",o:["৩২","৪৮","৯৬","৬৪"],a:0},
+  {q:"৭x = ৪৯ হলে x = ?",o:["৫","৬","৭","৮"],a:2},
+  {q:"সরল সুদে ৫% হারে ২ বছরে ৫০০ টাকার সুদ কত?",o:["২৫","৪০","৫০","৭৫"],a:2},
+  {q:"২ + ৩ × ৪ = ? (BODMAS)",o:["২০","১৪","১১","১৮"],a:1},
+  {q:"একটি আয়তক্ষেত্রের দৈর্ঘ্য ১৫ ও প্রস্থ ৯। ক্ষেত্রফল কত?",o:["১২০","১৩৫","১৪৫","১৫০"],a:1},
+  {q:"০.২৫ কে ভগ্নাংশে রূপান্তর করো।",o:["১/২","১/৩","১/৪","১/৫"],a:2},
+  {q:"৫ : ৮ = x : ৪০ হলে x = ?",o:["২০","২৫","৩০","৩৫"],a:1},
+  {q:"একটি সংখ্যা তার বর্গের ¼ এর সমান। সংখ্যাটি কত?",o:["২","৩","৪","৫"],a:2},
+  {q:"১৫ জনের গড় বয়স ১৪। মোট বয়স কত?",o:["১৮০","১৯০","২০০","২১০"],a:3},
+  {q:"(a + b)² = ?",o:["a² + b²","a² + 2ab + b²","a² – 2ab + b²","2a + 2b"],a:1},
+  {q:"সমবাহু ত্রিভুজের প্রতিটি কোণ কত ডিগ্রি?",o:["৪৫°","৫৪°","৬০°","৯০°"],a:2},
+  {q:"১৬ এর ঘনমূল কত?",o:["২","২.৫","৪","৮"],a:1},
+  {q:"৩x + ২y = ১২ এবং x = ২ হলে y = ?",o:["২","৩","৪","৫"],a:1},
+  {q:"মূলদ সংখ্যা কোনটি?",o:["√২","√৩","√৯","√৫"],a:2},
+  {q:"একটি সিলিন্ডারের ব্যাসার্ধ ৩ ও উচ্চতা ৭। আয়তন কত? (π = ২২/৭)",o:["১৯৮","১৩২","৬৬","২৬৪"],a:0},
+  {q:"৪৮ কে মৌলিক উৎপাদকে ভাঙলে পাই?",o:["2×2×2×2×3","2×2×2×6","4×12","2×24"],a:0},
+  {q:"১২০° এর পরিপূরক কোণ কত?",o:["৩০°","৪০°","৫০°","৬০°"],a:3},
+  {q:"৭৫% = কত ভগ্নাংশ?",o:["১/৪","১/২","৩/৪","২/৩"],a:2},
+  {q:"৫টি সংখ্যার যোগফল ১২০। তাদের গড় কত?",o:["২০","২২","২৪","২৬"],a:2},
+  {q:"∠A + ∠B = ৯০° হলে এদের সম্পর্ক কী?",o:["পরিপূরক","পূরক","সম্পূরক","বিপ্রতীপ"],a:1},
+  {q:"√২৫ + √৩৬ = ?",o:["৯","১১","১৩","৬১"],a:1},
+  {q:"x : y = ২ : ৩ এবং y : z = ৩ : ৪ হলে x : z = ?",o:["১:২","২:৩","১:৩","২:৪"],a:0},
+  {q:"সমদ্বিবাহু ত্রিভুজের ভূমি ১০ ও সমান বাহু ১৩। উচ্চতা কত?",o:["৯","১০","১২","১৫"],a:2},
+  {q:"কোনটি বেমানান? ৪, ৯, ১৬, ২৩, ২৫",o:["৯","১৬","২৩","২৫"],a:2},
+  {q:"১০০ এর ১০% এর ১০% = ?",o:["০.১","১","১০","১০০"],a:1},
+  {q:"বৃত্তের কেন্দ্র থেকে পরিধির যেকোনো বিন্দুর দূরত্বকে কী বলে?",o:["ব্যাস","জ্যা","ব্যাসার্ধ","কর্ড"],a:2},
+  {q:"৩ এর ঘাত কতে ২৭ হয়?",o:["১","২","৩","৪"],a:2},
+  {q:"a = ৩, b = ২ হলে a³ – b³ = ?",o:["১৯","১৭","১৫","১৩"],a:0},
+];
+
+const CFG={
+  iq:{name:"IQ টেস্ট",badge:"🧠 IQ",color:"#00c6ff",qs:IQ},
+  ict:{name:"ICT টেস্ট",badge:"💻 ICT",color:"#00ffb0",qs:ICT},
+  math:{name:"গণিত টেস্ট",badge:"📐 Math",color:"#ff7043",qs:MATH}
+};
+
+let type,qs,idx,score,answered,tLeft,tInt;
+
+function show(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  document.getElementById('pg-'+id).classList.add('on');
+  window.scrollTo(0,0);
+}
+
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+function begin(t){
+  type=t;
+  const c=CFG[t];
+  qs=shuffle([...c.qs]);
+  idx=0;score=0;answered=0;tLeft=40*60;
+  document.getElementById('qbadge').textContent=c.badge;
+  document.getElementById('qbadge').style.cssText=`background:${c.color}22;color:${c.color};border:1px solid ${c.color}55`;
+  document.getElementById('qtitle').textContent=c.name;
+  document.getElementById('pfill').style.background=`linear-gradient(90deg,${c.color},${c.color}aa)`;
+  document.getElementById('nxtbtn').style.background=`linear-gradient(135deg,${c.color},${c.color}99)`;
+  document.getElementById('nxtbtn').style.color=(t==='math')?'#fff':'#000';
+  document.getElementById('tdot').style.background='#00ffb0';
+  document.querySelector('.timer').style.borderColor='#1a3050';
+  document.querySelector('.timer').style.color='#e2eeff';
+  show('quiz');
+  renderQ();
+  clearInterval(tInt);
+  tickTimer();
+  tInt=setInterval(tickTimer,1000);
+}
+
+function tickTimer(){
+  const m=Math.floor(tLeft/60),s=tLeft%60;
+  document.getElementById('tdisp').textContent=bn(String(m).padStart(2,'0')+':'+String(s).padStart(2,'0'));
+  if(tLeft<=120){
+    document.querySelector('.timer').style.borderColor='#ff4757';
+    document.querySelector('.timer').style.color='#ff4757';
+    document.getElementById('tdot').style.background='#ff4757';
+  }
+  if(tLeft<=0){clearInterval(tInt);endQuiz();}
+  tLeft--;
+}
+
+const LBL=['ক','খ','গ','ঘ'];
+
+function renderQ(){
+  const q=qs[idx],total=qs.length;
+  document.getElementById('qno').textContent='প্রশ্ন '+bn(String(idx+1).padStart(2,'0'));
+  document.getElementById('qtext').textContent=q.q;
+  document.getElementById('ptext').textContent='প্রশ্ন '+bn(idx+1)+'/'+bn(total);
+  document.getElementById('stext').textContent='স্কোর: '+bn(score);
+  document.getElementById('pfill').style.width=(idx/total*100)+'%';
+  document.getElementById('fb').className='fb';
+  document.getElementById('nxtbtn').className='nxt';
+  const g=document.getElementById('opts');
+  g.innerHTML='';
+  q.o.forEach((op,i)=>{
+    const b=document.createElement('button');
+    b.className='opt';
+    b.innerHTML=`<span class="opt-lbl">${LBL[i]}</span><span>${op}</span>`;
+    b.onclick=()=>pick(i,q.a,b);
+    g.appendChild(b);
+  });
+}
+
+function pick(chosen,correct,btn){
+  const btns=document.querySelectorAll('.opt');
+  btns.forEach(b=>b.classList.add('locked'));
+  const fb=document.getElementById('fb');
+  if(chosen===correct){
+    btn.classList.add('right');
+    btns.forEach((b,i)=>{if(i!==chosen)b.classList.add('dim');});
+    fb.className='fb ok show';
+    fb.innerHTML='✅ চমৎকার! সঠিক উত্তর দিয়েছ।';
+    score++;
+  }else{
+    btn.classList.add('wrong');
+    btns.forEach((b,i)=>{if(i===correct)b.classList.add('right');else if(i!==chosen)b.classList.add('dim');});
+    fb.className='fb bad show';
+    fb.innerHTML=`❌ ভুল! সঠিক উত্তর: <strong>${qs[idx].o[correct]}</strong>`;
+  }
+  answered++;
+  document.getElementById('nxtbtn').className='nxt show';
+}
+
+function nextQ(){
+  idx++;
+  if(idx>=qs.length){endQuiz();}else{renderQ();}
+}
+
+function endQuiz(){
+  clearInterval(tInt);
+  const total=qs.length,pct=Math.round(score/total*100),wrong=answered-score,unans=total-answered;
+  let trophy,grade,msg,gc;
+  if(pct>=90){trophy='🏆';grade='A+';msg='অসাধারণ! তুমি মেধাবী!';gc='#ffd700';}
+  else if(pct>=80){trophy='🥇';grade='A';msg='চমৎকার পারফরম্যান্স!';gc='#00c6ff';}
+  else if(pct>=70){trophy='🥈';grade='B+';msg='খুব ভালো করেছ!';gc='#00ffb0';}
+  else if(pct>=60){trophy='🥉';grade='B';msg='ভালো চেষ্টা! আরও পড়াশোনা করো।';gc='#00ffb0';}
+  else if(pct>=50){trophy='📚';grade='C';msg='আরও চেষ্টা করো!';gc='#ff7043';}
+  else{trophy='💪';grade='D';msg='হতাশ হয়ো না, আবার চেষ্টা করো!';gc='#ff4757';}
+  document.getElementById('rtrophy').textContent=trophy;
+  document.getElementById('rtitle').textContent=CFG[type].name+' শেষ!';
+  document.getElementById('rsub').textContent=CFG[type].name+' সম্পন্ন হয়েছে';
+  document.getElementById('sbig').textContent=bn(score);
+  document.getElementById('sbig').style.color=CFG[type].color;
+  document.getElementById('sring').style.background=`radial-gradient(circle,${CFG[type].color}18,transparent)`;
+  document.getElementById('sring').style.boxShadow=`0 0 40px ${CFG[type].color}33`;
+  document.getElementById('sc').textContent=bn(score);
+  document.getElementById('sw').textContent=bn(wrong+unans);
+  document.getElementById('sp').textContent=bn(pct)+'%';
+  document.getElementById('gval').textContent=grade;
+  document.getElementById('gval').style.color=gc;
+  document.getElementById('gmsg').textContent=msg;
+  const rb=document.getElementById('retrybtn');
+  rb.style.background=`linear-gradient(135deg,${CFG[type].color},${CFG[type].color}99)`;
+  rb.style.color=(type==='math')?'#fff':'#000';
+  show('result');
+}
+
+function retry(){begin(type);}
+function goHome(){clearInterval(tInt);show('home');}
+</script>
+</body>
+</html>
